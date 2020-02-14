@@ -12,7 +12,8 @@
     B loop
 
 delay:
-    POP R5
+    MOVW R5, 0x0000
+    MOVT R5, 0x0020
     MOVW R6, 0x0
     MOVT R6, 0x0
     ADD R6, R6, 0x1
@@ -34,19 +35,9 @@ off:
 
 loop:
     BL on
-
-    MOVW R5, 0xB000
-    MOVT R5, 0x001F
-    PUSH R5
     BL delay
-
     BL off
-
-    MOVW R5, 0xB000
-    MOVT R5, 0x001F
-    PUSH R5
     BL delay
-
     POP R1
     POP R0
     ADD R1, R1, 0x1
@@ -54,13 +45,3 @@ loop:
     PUSH R0
     PUSH R1
     BLT loop
-
-    MOVW R5, 0x0000
-    MOVT R5, 0x0030
-    PUSH R5
-    BL delay
-    POP R1
-    MOVW R1, 0x0000
-    MOVT R1, 0x0000
-    PUSH R1
-    B loop
