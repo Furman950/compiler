@@ -1,0 +1,2 @@
+    MOVW R13, 0
+    MOVT R13, 0

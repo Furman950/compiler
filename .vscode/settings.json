@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "cstdlib": "c",
+        "type_traits": "c",
+        "errno.h": "c",
+        "stdio.h": "c",
+        "process.h": "c",
+        "compiler.h": "c",
+        "constants.h": "c"
+    }
+}

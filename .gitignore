@@ -1,0 +1,7 @@
+*.exe
+*.s
+!header.s
+!footer.s
+*.img
+*.jar
+constants.h
