@@ -6,6 +6,10 @@
         "stdio.h": "c",
         "process.h": "c",
         "compiler.h": "c",
-        "constants.h": "c"
+        "constants.h": "c",
+        "*.tcc": "cpp",
+        "sstream": "c",
+        "vector": "c",
+        "algorithm": "c"
     }
 }
