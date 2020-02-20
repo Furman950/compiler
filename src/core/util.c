@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "constants.h"
+#include "node.h"
 
 void copy_from_to(FILE *from, FILE *to) {
   char c;
@@ -50,4 +51,26 @@ char *read_file_into_buffer(FILE *fp) {
   fread(buffer, sizeof(char), nread, fp);
 
   return buffer;
+}
+
+char *get_operator(int op_value) {
+  switch (op_value) {
+    case ADD:
+      return "+";
+    case MUL:
+      return "*";
+    default:
+      return "Invalid operator!!";
+  }
+}
+
+int operator_to_enum(char c) {
+  switch (c) {
+    case '+':
+      return ADD;
+    case '*':
+      return MUL;
+    default:
+      return -1;
+  }
 }
