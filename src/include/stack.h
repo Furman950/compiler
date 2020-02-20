@@ -1,12 +1,14 @@
+#include "node.h"
+
 typedef struct {
   int top;
   unsigned capacity;
-  char *array[];
+  struct Node *array[];
 } Stack;
 
-Stack *createStack();
-int isFull(Stack *stack);
-int isEmpty(Stack *stack);
-void push(Stack **stack, char *item);
-char *pop(Stack *stack);
-char *peek(Stack *stack);
+Stack *create_stack(unsigned capacity);
+void free_stack(Stack *stack);
+int is_full(Stack *stack);
+int is_empty(Stack *stack);
+void push(Stack **stack, struct Node *node);
+struct Node *pop(Stack *stack);
