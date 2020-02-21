@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include "astbuilder.h"
 #include "constants.h"
 #include "util.h"
 
@@ -26,17 +27,46 @@ void write_pushing_const_to_stack(char *hex_value, FILE *output) {
   free(first_four), free(last_four);
 }
 
+void write_operator_instruction(int type, FILE *output) {
+  fprintf(output, "    POP R2\n");
+  fprintf(output, "    POP R1\n");
+
+  if (type == ADD) {
+    fprintf(output, "    ADD R0, R1, R2\n");
+  } else if (type == MUL) {
+    fprintf(output, "    MUL R0, R1, R2\n");
+  }
+
+  fprintf(output, "    PUSH R0\n\n\n");
+}
+
+void write_instructions(struct Node *node, FILE *output) {
+  if (node == NULL) return;
+
+  if (node->type == CONSTANT) {
+    char *hex_value = (char *)calloc(8, sizeof(char));
+    sprintf(hex_value, "0x%08x", node->value);
+    write_pushing_const_to_stack(hex_value, output);
+    free(hex_value);
+    return;
+  }
+
+  write_instructions(node->op.left, output);
+  write_instructions(node->op.right, output);
+
+  write_operator_instruction(node->type, output);
+}
+
 void proccess_program(char *file_buffer, FILE *output) {
-  int value = atoi(file_buffer);
+  Stack *main_stack = create_stack(1);
+  Stack *operator_stack = create_stack(1);
+  struct Node *root = build_ast(&main_stack, &operator_stack, file_buffer);
 
-  if (value == 0)
-    free(file_buffer), printf("'%s' is not a number!!", file_buffer),
-        exit(EXIT_FAILURE);
+  write_instructions(root, output);
 
-  char *hex_value = (char *)calloc(8, sizeof(char));
-  sprintf(hex_value, "0x%08x", value);
-  write_pushing_const_to_stack(hex_value, output);
-  free(hex_value);
+  free(root);
+  free_stack(main_stack);
+  free_stack(operator_stack);
 }
 
 int write_header(FILE *fp) {

@@ -48,3 +48,10 @@ struct Node* pop(Stack* stack) {
   }
   return stack->array[stack->top--];
 }
+
+struct Node* peek(Stack* stack) {
+  if (is_empty(stack)) {
+    return NULL;
+  }
+  return stack->array[stack->top];
+}

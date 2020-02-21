@@ -56,9 +56,9 @@ char *read_file_into_buffer(FILE *fp) {
 char *get_operator(int op_value) {
   switch (op_value) {
     case ADD:
-      return "+";
+      return "ADD";
     case MUL:
-      return "*";
+      return "MUL";
     default:
       return "Invalid operator!!";
   }

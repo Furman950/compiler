@@ -12,3 +12,4 @@ int is_full(Stack *stack);
 int is_empty(Stack *stack);
 void push(Stack **stack, struct Node *node);
 struct Node *pop(Stack *stack);
+struct Node *peek(Stack *stack);
