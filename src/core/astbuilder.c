@@ -50,7 +50,8 @@ struct Node* build_ast_from_stacks(Stack* output, Stack* operator_stack) {
 void build_ast_while_precedence_is_greater(Stack* output, Stack* operator_stack,
                                            int precedence,
                                            struct Node* top_of_stack) {
-  if (top_of_stack == NULL || top_of_stack->type <= precedence) {
+  if (top_of_stack == NULL || top_of_stack->type <= precedence ||
+      top_of_stack->type == OPEN_PARN || top_of_stack->type == CLOSE_PARN) {
     return;
   }
 
@@ -72,13 +73,54 @@ void build_ast_while_precedence_is_greater(Stack* output, Stack* operator_stack,
                                         peek(operator_stack));
 }
 
+void build_ast_until_open_parn(Stack* output, Stack* operator_stack) {
+  struct Node* node = pop(operator_stack);
+
+  if (node->type == OPEN_PARN) {
+    return;
+  }
+
+  struct Node* right = pop(output);
+  struct Node* left = pop(output);
+
+  if (right == NULL || left == NULL) {
+    puts("Invalid expression");
+    return;
+  }
+
+  node->op.right = right;
+  node->op.left = left;
+
+  push(&output, node);
+
+  build_ast_until_open_parn(output, operator_stack);
+}
+
 void add_input_to_stacks(Stack** output, Stack** operator_stack, char* input) {
   char* ptr = input;
 
   while (*ptr != '\0') {
     char* str = calloc(2, sizeof(char));
 
-    if (is_num(*ptr)) {
+    if (*ptr == '(') {
+      struct Node* node = (struct Node*)malloc(sizeof(struct Node*));
+      node->type = OPEN_PARN;
+      node->op.left = NULL, node->op.right = NULL;
+      push(operator_stack, node);
+      ptr++;
+    } else if (*ptr == ')') {
+      struct Node* top_of_stack = (struct Node*)malloc(sizeof(struct Node*));
+      top_of_stack = peek(*operator_stack);
+
+      if (top_of_stack->type == OPEN_PARN) {
+        pop(*operator_stack);
+        ptr++;
+      } else {
+        build_ast_until_open_parn(*output, *operator_stack);
+        ptr++;
+      }
+
+    } else if (is_num(*ptr)) {
       build_str(is_num, &ptr, &str);
       int num = atoi(str);
       struct Node* node = (struct Node*)malloc(sizeof(struct Node*));
