@@ -96,10 +96,23 @@ void build_ast_until_open_parn(Stack* output, Stack* operator_stack) {
   build_ast_until_open_parn(output, operator_stack);
 }
 
+void get_variable(char** line, char** variable) {
+  int currentSize = 2, currentIndex = 0;
+  char* tmp = *line;
+  *(*variable + currentIndex++) = *tmp++;
+  while (isalpha(*tmp) || isdigit(*tmp)) {
+    *variable = (char*)realloc(*variable, ++currentSize * sizeof(char));
+    *(*variable + currentIndex++) = *tmp++;
+  }
+
+  *(*variable + currentIndex++) = '\0';
+  *line = tmp;
+}
+
 void add_input_to_stacks(Stack** output, Stack** operator_stack, char* input) {
   char* ptr = input;
 
-  while (*ptr != '\0') {
+  while (*ptr != '\n' && *ptr != '\0') {
     char* str = calloc(2, sizeof(char));
 
     if (*ptr == '(') {
@@ -127,6 +140,13 @@ void add_input_to_stacks(Stack** output, Stack** operator_stack, char* input) {
       node->type = CONSTANT;
       node->value = num;
       push(output, node);
+    } else if (isalpha(*ptr)) {
+      char* variable = malloc(2 * sizeof(char));
+      get_variable(&ptr, &variable);
+      struct Node* node = (struct Node*)malloc(sizeof(struct Node*));
+      node->type = VAR;
+      node->name = variable;
+      push(output, node);
     } else if (is_operator(*ptr)) {
       int precedence = operator_to_enum(*ptr);
       struct Node* top_of_stack = peek(*operator_stack);
@@ -151,7 +171,6 @@ void add_input_to_stacks(Stack** output, Stack** operator_stack, char* input) {
 
 struct Node* build_ast(Stack** main_stack, Stack** operator_stack,
                        char* input) {
-  char* ptr = input;
   add_input_to_stacks(main_stack, operator_stack, input);
 
   struct Node* root = build_ast_from_stacks(*main_stack, *operator_stack);

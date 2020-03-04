@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,6 +52,60 @@ char *read_file_into_buffer(FILE *fp) {
   fread(buffer, sizeof(char), nread, fp);
 
   return buffer;
+}
+
+void read_line(char **buffer, char **line) {
+  int currentSize = 2, currentIndex = 0;
+  char *tmp = *buffer;
+  *(*line + currentIndex++) = *tmp++;
+  while (*tmp != '\n' && *tmp != '\0') {
+    *line = (char *)realloc(*line, ++currentSize * sizeof(char));
+    if (*tmp == '\r') {
+      tmp++;
+      continue;
+    };
+    *(*line + currentIndex++) = *tmp++;
+  }
+
+  *(*line + currentIndex) = '\0';
+  *buffer = tmp;
+}
+
+int extract_variable(char **line, char **variable) {
+  int currentSize = 2, currentIndex = 0;
+  char *tmp = *line;
+  *(*variable + currentIndex++) = *tmp++;
+
+  // while (isalpha(*tmp)) {
+  while (isalpha(*tmp) || isdigit(*tmp)) {
+    *variable = (char *)realloc(*variable, ++currentSize * sizeof(char));
+    *(*variable + currentIndex++) = *tmp++;
+  }
+
+  *(*variable + currentIndex) = '\0';
+
+  while (*tmp == ' ') tmp++;
+  if (*tmp == '=')
+    tmp++;
+  else
+    return -1;
+  while (*tmp == ' ') tmp++;
+  *line = tmp;
+  return 0;
+}
+
+int just_variable(char *line) {
+  if (isalpha(*line++)) {
+    while (isalpha(*line) || isdigit(*line)) {
+      line++;
+    }
+
+    while (*line == ' ') line++;
+    if (*line == '=') return 0;
+    else return 1;
+  }
+
+  return 0;
 }
 
 char *get_operator(int op_value) {
