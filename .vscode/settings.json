@@ -10,6 +10,9 @@
         "*.tcc": "cpp",
         "sstream": "c",
         "vector": "c",
-        "algorithm": "c"
+        "algorithm": "c",
+        "hashmap.h": "c",
+        "unordered_map": "c",
+        "ctype.h": "c"
     }
 }
